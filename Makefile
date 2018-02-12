@@ -24,3 +24,4 @@ install :
 	cp ${MAN_FILE} ${MAN_DIR}
 	# openSUSE:
 	# unalias beep
+	# export PATH=$PATH:/mnt/c/Windows/System32/WindowsPowerShell/v1.0
