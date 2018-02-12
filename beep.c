@@ -198,7 +198,7 @@ void parse_command_line(int argc, char **argv, beep_parms_t *result) {
 	if (result->freq != 0)
 	  fprintf(stderr, "WARNING: multiple -f values given, only last "
 	    "one is used.\n");
-	result->freq = argfreq;
+      result->freq = argfreq;
       break;
     case 'l' : /* length */
       if(!sscanf(optarg, "%d", &argval) || (argval < 0))
