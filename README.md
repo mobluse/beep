@@ -12,7 +12,11 @@ make
 sudo make install
 beep -f 261.6 -l 700
 ```
-In Cygwin you have to modify the Makefile.
+In OpenSUSE you have to also do:
+```
+unalias beep
+export PATH=$PATH:/mnt/c/Windows/System32/WindowsPowerShell/v1.0
+```
 
 This makes it possible to play the files in https://github.com/ShaneMcC/beeps or the command-lines in https://www.reddit.com/r/linux/comments/18h8v5/does_anyone_have_or_know_a_source_for_beep_scripts/.
 
