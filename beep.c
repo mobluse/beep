@@ -5,36 +5,39 @@
  *
  * This code is copyright (C) Johnathan Nightingale, 2000.
  *
- * This code may distributed only under the terms of the GNU Public License 
- * which can be found at http://www.gnu.org/copyleft or in the file COPYING 
+ * This code may distributed only under the terms of the GNU Public License
+ * which can be found at http://www.gnu.org/copyleft or in the file COPYING
  * supplied with this code.
  *
  * This code is not distributed with warranties of any kind, including implied
- * warranties of merchantability or fitness for a particular use or ability to 
+ * warranties of merchantability or fitness for a particular use or ability to
  * breed pandas in captivity, it just can't be done.
  *
  * Bug me, I like it:  http://johnath.com/  or johnath@johnath.com
  */
 
-#include <fcntl.h>
+// Modified for WSL Windows Subsystem for Linux and tested in Ubuntu by
+// Mikael O. Bonnier @mobluse https://github.com/mobluse
+
+//#include <fcntl.h>
 #include <getopt.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <linux/kd.h>
-#include <linux/input.h>
+//#include <sys/ioctl.h>
+//#include <sys/types.h>
+//#include <linux/kd.h>
+//#include <linux/input.h>
 
-/* I don't know where this number comes from, I admit that freely.  A 
+/* I don't know where this number comes from, I admit that freely.  A
    wonderful human named Raine M. Ekman used it in a program that played
    a tune at the console, and apparently, it's how the kernel likes its
-   sound requests to be phrased.  If you see Raine, thank him for me.  
-   
+   sound requests to be phrased.  If you see Raine, thank him for me.
+
    June 28, email from Peter Tirsek (peter at tirsek dot com):
-   
+
    This number represents the fixed frequency of the original PC XT's
    timer chip (the 8254 AFAIR), which is approximately 1.193 MHz. This
    number is divided with the desired frequency to obtain a counter value,
@@ -44,12 +47,12 @@
    resets the counter to the original value, and starts over. The end
    result of this is a tone at approximately the desired frequency. :)
 */
-#ifndef CLOCK_TICK_RATE
-#define CLOCK_TICK_RATE 1193180
-#endif
+//#ifndef CLOCK_TICK_RATE
+//#define CLOCK_TICK_RATE 1193180
+//#endif
 
-#define VERSION_STRING "beep-1.3"
-char *copyright = 
+#define VERSION_STRING "beep-1.3-WSL"
+char *copyright =
 "Copyright (C) Johnathan Nightingale, 2002.  "
 "Use and Distribution subject to GPL.  "
 "For information: http://www.gnu.org/copyleft/.";
@@ -88,37 +91,34 @@ typedef struct beep_parms_t {
   struct beep_parms_t *next;  /* in case -n/--new is used. */
 } beep_parms_t;
 
-enum { BEEP_TYPE_CONSOLE, BEEP_TYPE_EVDEV };
+//enum { BEEP_TYPE_CONSOLE, BEEP_TYPE_EVDEV };
 
-/* Momma taught me never to use globals, but we need something the signal 
+/* Momma taught me never to use globals, but we need something the signal
    handlers can get at.*/
-int console_fd = -1;
-int console_type = BEEP_TYPE_CONSOLE;
+//int console_fd = -1;
+//int console_type = BEEP_TYPE_CONSOLE;
 char *console_device = NULL;
 
 
-void do_beep(int freq) {
-  int period = (freq != 0 ? (int)(CLOCK_TICK_RATE/freq) : freq);
-
-  if(console_type == BEEP_TYPE_CONSOLE) {
-    if(ioctl(console_fd, KIOCSOUND, period) < 0) {
-      putchar('\a');  /* Output the only beep we can, in an effort to fall back on usefulness */
-      perror("ioctl");
-    }
-  } else {
-     /* BEEP_TYPE_EVDEV */
-     struct input_event e;
-
-     e.type = EV_SND;
-     e.code = SND_TONE;
-     e.value = freq;
-
-     if(write(console_fd, &e, sizeof(struct input_event)) < 0) {
-       putchar('\a'); /* See above */
-       perror("write");
-     }
-  }
-}
+//void do_beep(int freq) {
+//  if (console_type == BEEP_TYPE_CONSOLE) {
+//    if(ioctl(console_fd, KIOCSOUND, freq != 0
+//      ? (int)(CLOCK_TICK_RATE/freq)
+//      : freq) < 0) {
+//      printf("\a");  /* Output the only beep we can, in an effort to fall back on usefulness */
+//      perror("ioctl");
+//    }
+//  } else {
+//     /* BEEP_TYPE_EVDEV */
+//     struct input_event e;
+//
+//     e.type = EV_SND;
+//     e.code = SND_TONE;
+//     e.value = freq;
+//
+//     write(console_fd, &e, sizeof(struct input_event));
+//  }
+//}
 
 
 /* If we get interrupted, it would be nice to not leave the speaker beeping in
@@ -131,15 +131,15 @@ void handle_signal(int signum) {
   switch(signum) {
   case SIGINT:
   case SIGTERM:
-    if(console_fd >= 0) {
+//    if(console_fd >= 0) {
       /* Kill the sound, quit gracefully */
-      do_beep(0);
-      close(console_fd);
-      exit(signum);
-    } else {
+//      do_beep(0);
+//      close(console_fd);
+//      exit(signum);
+//    } else {
       /* Just quit gracefully */
       exit(signum);
-    }
+//    }
   }
 }
 
@@ -158,7 +158,7 @@ void usage_bail(const char *executable_name) {
 /* Parse the command line.  argv should be untampered, as passed to main.
  * Beep parameters returned in result, subsequent parameters in argv will over-
  * ride previous ones.
- * 
+ *
  * Currently valid parameters:
  *  "-f <frequency in Hz>"
  *  "-l <tone length in ms>"
@@ -188,17 +188,17 @@ void parse_command_line(int argc, char **argv, beep_parms_t *result) {
   while((c = getopt_long(argc, argv, "f:l:r:d:D:schvVne:", opt_list, NULL))
 	!= EOF) {
     int argval = -1;    /* handle parsed numbers for various arguments */
-    float argfreq = -1; 
-    switch(c) {      
+    float argfreq = -1;
+    switch(c) {
     case 'f':  /* freq */
-      if(!sscanf(optarg, "%f", &argfreq) || (argfreq >= 20000 /* ack! */) || 
+      if(!sscanf(optarg, "%f", &argfreq) || (argfreq > 32767.0 /* ack! */) ||
 	 (argfreq <= 0))
 	usage_bail(argv[0]);
       else
 	if (result->freq != 0)
 	  fprintf(stderr, "WARNING: multiple -f values given, only last "
 	    "one is used.\n");
-	result->freq = argfreq;    
+	result->freq = argfreq;
       break;
     case 'l' : /* length */
       if(!sscanf(optarg, "%d", &argval) || (argval < 0))
@@ -266,7 +266,9 @@ void parse_command_line(int argc, char **argv, beep_parms_t *result) {
   }
   if (result->freq == 0)
     result->freq = DEFAULT_FREQ;
-}  
+}
+
+char cmd[80];
 
 void play_beep(beep_parms_t parms) {
   int i; /* loop counter */
@@ -277,43 +279,52 @@ void play_beep(beep_parms_t parms) {
 	parms.reps, parms.length, parms.delay, parms.end_delay, parms.freq);
 
   /* try to snag the console */
-  if(console_device)
-    console_fd = open(console_device, O_WRONLY);
-  else
-    if((console_fd = open("/dev/tty0", O_WRONLY)) == -1)
-      console_fd = open("/dev/vc/0", O_WRONLY);
+//  if(console_device)
+//    console_fd = open(console_device, O_WRONLY);
+//  else
+//    if((console_fd = open("/dev/tty0", O_WRONLY)) == -1)
+//      console_fd = open("/dev/vc/0", O_WRONLY);
 
-  if(console_fd == -1) {
-    fprintf(stderr, "Could not open %s for writing\n",
-      console_device != NULL ? console_device : "/dev/tty0 or /dev/vc/0");
-    printf("\a");  /* Output the only beep we can, in an effort to fall back on usefulness */
-    perror("open");
-    exit(1);
-  }
+//  if(console_fd == -1) {
+//    fprintf(stderr, "Could not open %s for writing\n",
+//      console_device != NULL ? console_device : "/dev/tty0 or /dev/vc/0");
+//    printf("\a");  /* Output the only beep we can, in an effort to fall back on usefulness */
+//    perror("open");
+//    exit(1);
+//  }
 
-  if (ioctl(console_fd, EVIOCGSND(0)) != -1)
-    console_type = BEEP_TYPE_EVDEV;
-  else
-    console_type = BEEP_TYPE_CONSOLE;
-  
+//  if (ioctl(console_fd, EVIOCGSND(0)) != -1)
+//    console_type = BEEP_TYPE_EVDEV;
+//  else
+//    console_type = BEEP_TYPE_CONSOLE;
+
   /* Beep */
   for (i = 0; i < parms.reps; i++) {                    /* start beep */
-    do_beep(parms.freq);
+//    do_beep(parms.freq);
     /* Look ma, I'm not ansi C compatible! */
-    usleep(1000*parms.length);                          /* wait...    */
-    do_beep(0);                                         /* stop beep  */
+//    usleep(1000*parms.length);                          /* wait...    */
+//    do_beep(0);                                         /* stop beep  */
+    if (37.0 <= parms.freq && parms.freq <= 32767.0) {
+       sprintf(cmd, "powershell.exe \"[console]::beep(%.1f,%d)\"", parms.freq, parms.length);
+       int ret = system(cmd);
+       if (WIFSIGNALED(ret) &&
+             (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
+          break;
+    }
+    else
+       usleep(1000*parms.length);
     if(parms.end_delay || (i+1 < parms.reps))
        usleep(1000*parms.delay);                        /* wait...    */
   }                                                     /* repeat.    */
 
-  close(console_fd);
+//  close(console_fd);
 }
 
 
 
 int main(int argc, char **argv) {
   char sin[4096], *ptr;
-  
+
   beep_parms_t *parms = (beep_parms_t *)malloc(sizeof(beep_parms_t));
   parms->freq       = 0;
   parms->length     = DEFAULT_LENGTH;
