@@ -12,7 +12,7 @@ Build and install in Ubuntu, Cygwin and OpenSUSE using:
 make
 sudo make install
 ```
-In OpenSUSE you have to also do:
+In Cygwin you need to leave out `sudo`. In OpenSUSE you have to also do:
 ```
 unalias beep
 export PATH=$PATH:/mnt/c/Windows/System32/WindowsPowerShell/v1.0
