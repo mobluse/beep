@@ -1,5 +1,5 @@
 # wsl-beep
-Beep for WSL Ubuntu and other Linux distros in Windows 10 e.g. Cygwin and WSL OpenSUSE. The 
+Beep for WSL Ubuntu, OpenSUSE in Windows 10, and Cygwin. The 
 built-in [`beep`](https://linux.die.net/man/1/beep) in 
 Ubuntu/OpenSUSE doesn't work in WSL (Windows Subsystem for Linux), but I've modified it to use
 [Windows Beep()](https://msdn.microsoft.com/en-us/library/windows/desktop/ms679277(v=vs.85).aspx)
