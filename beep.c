@@ -268,7 +268,7 @@ void parse_command_line(int argc, char **argv, beep_parms_t *result) {
     result->freq = DEFAULT_FREQ;
 }
 
-char cmd[80];
+char cmd[160];
 
 void play_beep(beep_parms_t parms) {
   int i; /* loop counter */
@@ -305,7 +305,8 @@ void play_beep(beep_parms_t parms) {
 //    usleep(1000*parms.length);                          /* wait...    */
 //    do_beep(0);                                         /* stop beep  */
     if (37.0 <= parms.freq && parms.freq <= 32767.0) {
-       sprintf(cmd, "powershell.exe \"[console]::beep(%.1f,%d)\"", parms.freq, parms.length);
+       sprintf(cmd, "/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe"
+" -Command \"[console]::beep(%.1f,%d)\"", parms.freq, parms.length);
        int ret = system(cmd);
        if (WIFSIGNALED(ret) &&
              (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
@@ -319,7 +320,6 @@ void play_beep(beep_parms_t parms) {
 
 //  close(console_fd);
 }
-
 
 
 int main(int argc, char **argv) {

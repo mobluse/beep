@@ -22,3 +22,4 @@ install :
 	cp ${EXEC_NAME} ${INSTALL_DIR}
 	# rm -f /usr/share/man/man1/beep.1.bz2
 	cp ${MAN_FILE} ${MAN_DIR}
+        unalias beep
