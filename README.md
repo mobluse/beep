@@ -19,7 +19,7 @@ export PATH=$PATH:/mnt/c/Windows/System32/WindowsPowerShell/v1.0
 ```
 Then you can try `beep -f 261.6 -l 700`. To read the manual using `man beep` doesn't work well in OpenSUSE for unknown reasons.
 
-This makes it possible to play the files in https://github.com/ShaneMcC/beeps or the command-lines in https://www.reddit.com/r/linux/comments/18h8v5/does_anyone_have_or_know_a_source_for_beep_scripts/.
+This makes it possible to play the files in https://github.com/ShaneMcC/beeps or https://github.com/Josef-Friedrich/beep-melodies or the command-lines in https://www.reddit.com/r/linux/comments/18h8v5/does_anyone_have_or_know_a_source_for_beep_scripts/.
 
 You can break out of the playing files by pressing Ctrl+C for a long time.
 
