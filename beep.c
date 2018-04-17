@@ -306,7 +306,7 @@ void play_beep(beep_parms_t parms) {
 //    do_beep(0);                                         /* stop beep  */
     if (37.0 <= parms.freq && parms.freq <= 32767.0) {
        sprintf(cmd, "powershell.exe"
-" -Command \"[console]::beep(%.1f,%d)\"", parms.freq, parms.length);
+" -NoProfile -NonInteractive -Command \"[console]::beep(%.1f,%d)\"", parms.freq, parms.length);
        int ret = system(cmd);
        if (WIFSIGNALED(ret) &&
              (WTERMSIG(ret) == SIGINT || WTERMSIG(ret) == SIGQUIT))
