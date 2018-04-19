@@ -20,8 +20,10 @@ beep : beep.c
 
 install :
 	cp ${EXEC_NAME} ${INSTALL_DIR}
+	chmod a+rx ${INSTALL_DIR}/${EXEC_NAME}
 	# rm -f /usr/share/man/man1/beep.1.bz2
 	cp ${MAN_FILE} ${MAN_DIR}
+	chmod a+r ${MAN_DIR}/${MAN_FILE}
 	# openSUSE:
 	# unalias beep
 	# export PATH=$$PATH:/mnt/c/Windows/System32/WindowsPowerShell/v1.0
